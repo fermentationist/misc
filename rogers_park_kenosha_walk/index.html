@@ -675,32 +675,16 @@ function initMaps() {
     return map;
   }
 
-  // 3-day maps
+  // 3-day maps (visible on load, safe to build now)
   buildDayMap('map-3d1', 'day1', colors.day1);
   buildDayMap('map-3d2', 'day2', colors.day2);
   buildDayMap('map-3d3', 'day3', colors.day3);
 
-  // 2-day maps
-  buildDayMap('map-2d1', ['day1','day2'], colors.day1);
-  buildDayMap('map-2d2', 'day3', colors.day3);
-
-  // Fix map sizing when toggling visibility
-  window._maps = { overviewMap };
-  window._invalidateMaps = function() {
-    setTimeout(function() {
-      document.querySelectorAll('.leaflet-container').forEach(function(el) {
-        if (el._leaflet_id) {
-          var map = null;
-          // Find the map instance - Leaflet stores it on the element
-          for (var key in el) {
-            if (el[key] && el[key]._container === el) { map = el[key]; break; }
-          }
-        }
-      });
-      // Simpler: just invalidate all maps by triggering resize
-      window.dispatchEvent(new Event('resize'));
-    }, 100);
-  };
+  // 2-day maps: defer until visible
+  window._2dayMapsBuilt = false;
+  window._buildDayMap = buildDayMap;
+  window._colors = colors;
+  window._routes = routes;
 }
 
 // Toggle between plans
@@ -711,8 +695,14 @@ function switchPlan(plan) {
   document.getElementById('btn-2day').classList.toggle('active', plan === '2day');
   document.getElementById('stat-days').textContent = plan === '3day' ? '3' : '2';
 
-  // Fix map rendering after toggle
-  setTimeout(function() { window.dispatchEvent(new Event('resize')); }, 150);
+  // Build 2-day maps on first switch (they need a visible container)
+  if (plan === '2day' && !window._2dayMapsBuilt) {
+    window._2dayMapsBuilt = true;
+    setTimeout(function() {
+      window._buildDayMap('map-2d1', ['day1','day2'], window._colors.day1);
+      window._buildDayMap('map-2d2', 'day3', window._colors.day3);
+    }, 50);
+  }
 }
 
 if (document.readyState === 'loading') {
