@@ -191,8 +191,8 @@
   .popup-desc { color: var(--text-muted); font-size: 0.8rem; }
 
   /* Itinerary visibility */
-  .itinerary { display: none; }
-  .itinerary.active { display: block; }
+  .itinerary { position: absolute; left: -9999px; visibility: hidden; pointer-events: none; width: 100%; }
+  .itinerary.active { position: static; visibility: visible; pointer-events: auto; }
 
   @media (max-width: 600px) {
     .stats { gap: 20px; }
@@ -624,7 +624,7 @@
 </div>
 
 <footer>
-  Built for extreme walking (well, extreme for us) · May 2026
+  Built for Extreme Walkers 🥾 · May 2026
 </footer>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -671,19 +671,25 @@ function initMaps() {
       L.polyline(routes[k], { color:color, weight:4, opacity:0.9 }).addTo(map);
       allPts = allPts.concat(routes[k]);
     });
-    map.fitBounds(L.latLngBounds(allPts).pad(0.15));
+    var b = L.latLngBounds(allPts).pad(0.15);
+    map.fitBounds(b);
+    map._lastBounds = b;
     return map;
   }
 
-  // 3-day maps (visible on load, safe to build now)
+  // 3-day maps
   buildDayMap('map-3d1', 'day1', colors.day1);
   buildDayMap('map-3d2', 'day2', colors.day2);
   buildDayMap('map-3d3', 'day3', colors.day3);
 
-  // 2-day maps: defer until visible
-  window._2dayMapsBuilt = false;
-  window._buildDayMap = buildDayMap;
-  window._colors = colors;
+  // 2-day maps (containers are offscreen but have dimensions)
+  var map2d1 = buildDayMap('map-2d1', ['day1','day2'], colors.day1);
+  var map2d2 = buildDayMap('map-2d2', 'day3', colors.day3);
+
+  window._allDayMaps = {
+    '2day': [map2d1, map2d2],
+    '3day': []
+  };
   window._routes = routes;
 }
 
@@ -695,14 +701,18 @@ function switchPlan(plan) {
   document.getElementById('btn-2day').classList.toggle('active', plan === '2day');
   document.getElementById('stat-days').textContent = plan === '3day' ? '3' : '2';
 
-  // Build 2-day maps on first switch (they need a visible container)
-  if (plan === '2day' && !window._2dayMapsBuilt) {
-    window._2dayMapsBuilt = true;
-    setTimeout(function() {
-      window._buildDayMap('map-2d1', ['day1','day2'], window._colors.day1);
-      window._buildDayMap('map-2d2', 'day3', window._colors.day3);
-    }, 50);
-  }
+  // After switching, invalidate maps so they redraw at correct size
+  setTimeout(function() {
+    var maps = window._allDayMaps[plan] || [];
+    maps.forEach(function(m) {
+      if (m) {
+        m.invalidateSize();
+        // Re-fit bounds
+        var bounds = m._lastBounds;
+        if (bounds) m.fitBounds(bounds);
+      }
+    });
+  }, 100);
 }
 
 if (document.readyState === 'loading') {
