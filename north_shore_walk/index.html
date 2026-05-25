@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Rogers Park → Kenosha: 3-Day North Shore Walk</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=JetBrains+Mono:wght@400;500&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -519,10 +518,9 @@
       <div>
         <h3>Robert McClory Bike Path</h3>
         <div class="miles">~26 mi · Highland Park → WI State Line</div>
-        <p>The backbone. Beautiful ravines at Fort Sheridan, charming Lake Forest and Lake Bluff, then the grittier stretch through North Chicago and Waukegan. The trail follows an abandoned railroad corridor. Surface transitions from asphalt to crushed limestone heading north.</p>
+        <p>The backbone. Beautiful ravines at Fort Sheridan, charming Lake Forest and Lake Bluff, then a more industrial stretch through North Chicago and Waukegan before opening back up near Zion. The trail follows an abandoned railroad corridor. Surface transitions from asphalt to crushed limestone heading north.</p>
         <span class="surface-tag">Paved (south)</span>
         <span class="surface-tag">Crushed limestone (north)</span>
-        <span class="surface-tag">⚠️ Stay alert through N. Chicago / Waukegan</span>
       </div>
     </div>
 
@@ -622,7 +620,7 @@
       <span class="day-title">The McClory</span>
     </div>
     <div class="day-meta">Highland Park → Zion / Waukegan · ~18–20 mi</div>
-    <p class="day-narrative">The backbone of the route: the Robert McClory Bike Path. Beautiful ravines at Fort Sheridan, charming Lake Forest and Lake Bluff, then the grittier stretch through North Chicago and Waukegan. Push through to Zion and Illinois Beach State Park. Walk the North Chicago/Waukegan stretch in daylight — plan accordingly.</p>
+    <p class="day-narrative">The backbone of the route: the Robert McClory Bike Path. Beautiful ravines at Fort Sheridan, charming Lake Forest and Lake Bluff, then a more industrial stretch through North Chicago and Waukegan before the trail opens up again near Zion and Illinois Beach State Park.</p>
 
     <div class="map-wrapper">
       <div id="day2-map" class="map-container" style="height:300px"></div>
@@ -654,13 +652,13 @@
 
     <div class="stop">
       <div class="stop-header">
-        <div class="stop-icon">⚠️</div>
+        <div class="stop-icon">🏭</div>
         <div>
           <div class="stop-name">North Chicago / Waukegan</div>
           <div class="stop-time">~1:30 PM · Miles 13–16</div>
         </div>
       </div>
-      <div class="stop-notes">The trail runs behind old warehouses and through less scenic areas. Stay alert, keep moving, daylight hours only. The trail surface is still fine for walking.</div>
+      <div class="stop-notes">The trail runs behind old industrial buildings — less scenic but interesting in its own way. You can feel the old railroad corridor here. Fewer services and less shade than the North Shore sections, so top off your water before Lake Bluff.</div>
     </div>
 
     <div class="stop">
@@ -826,7 +824,9 @@
   Built for extreme walking (well, extreme for us) · May 2026
 </footer>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
+function initMaps() {
 // Dark tile layer
 const tiles = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
 const attr = '&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>';
@@ -847,7 +847,7 @@ const waypoints = {
     { lat: 42.1585, lng: -87.7763, name: 'Resume: Highland Park', desc: 'Green Bay Trail becomes McClory at Lake Cook Rd' },
     { lat: 42.2228, lng: -87.8108, name: 'Fort Sheridan Forest Preserve', desc: 'Mile 5 — bluffs, ravines, Lake Michigan views' },
     { lat: 42.2825, lng: -87.8105, name: 'Lake Bluff', desc: 'Mile 10 — last charming town, cafés' },
-    { lat: 42.3636, lng: -87.8448, name: 'Waukegan', desc: '⚠️ Miles 13–16 — stay alert, daylight only' },
+    { lat: 42.3636, lng: -87.8448, name: 'Waukegan', desc: 'Miles 13–16 — industrial stretch, fewer services' },
     { lat: 42.4257, lng: -87.8043, name: 'Illinois Beach State Park', desc: 'Mile 18 — beach & campground option' },
     { lat: 42.3388, lng: -87.8937, name: 'Night 2: Waukegan Hotels', desc: 'Hampton Inn, Holiday Inn, Courtyard', lodging: true },
   ],
@@ -963,6 +963,13 @@ function buildDayMap(containerId, dayKey, color) {
 buildDayMap('day1-map', 'day1', colors.day1);
 buildDayMap('day2-map', 'day2', colors.day2);
 buildDayMap('day3-map', 'day3', colors.day3);
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initMaps);
+} else {
+  initMaps();
+}
 </script>
 
 </body>
